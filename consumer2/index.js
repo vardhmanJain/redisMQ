@@ -32,6 +32,7 @@ async.forever(
                 // print all messages
                 messages.forEach(function(message){
                     // convert the message into a JSON Object
+                    console.log(message[1]);
                     var id = message[0];
                     var values = message[1];
                     var msgObject = { id : id};
@@ -39,11 +40,29 @@ async.forever(
                         msgObject[values[i]] = values[i+1];
                     }                    
                     console.log( "Consumer2 Message: "+ JSON.stringify(msgObject));
+                    redisClient.xack(STREAMS_KEY, APPLICATION_ID,msgObject.id);
+                    console.log("message acknowledged");
+                    // redisClient.xpending(STREAMS_KEY, APPLICATION_ID, function(err, stream){
+                    //     if(err) console.log(err);
+                    //     else {
+                    //         console.log(stream);
+                    //         console.log(stream[3][0][0]);
+                    //         var pending = stream[0][1];
+                    //         pending.forEach(function(message){
+                    //             // convert the message into a JSON Obj
+                    //             var id = message[0];
+                    //             var values = message[1];
+                    //             var msgObject = { id : id};
+                    //             for (var i = 0 ; i < values.length ; i=i+2) {
+                    //                 msgObject[values[i]] = values[i+1];
+                    //             }         
+                    //             console.log(msgObject); 
+                    //         })
+                    //     }
+                    // })
                 });
                 
-            } else {
-                // No message in the consumer buffer
-                console.log("No new message...");
+                
             }
 
             next();
